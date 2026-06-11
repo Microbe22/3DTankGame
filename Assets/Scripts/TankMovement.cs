@@ -23,7 +23,7 @@ public class TankMovement : MonoBehaviour
     [SerializeField] private GameObject bullet;
     private float shootCooldown = 0;
     private float maxShootCooldown = 0.5f;
-    private float projectileSpeed = 10f;
+    private float projectileSpeed = 15f;
     private int projectileDamage = 1;
     void Start()
     {
@@ -115,6 +115,7 @@ public class TankMovement : MonoBehaviour
             var pewpew = Instantiate(bullet, top.transform.position + top.transform.forward * 2, Quaternion.identity);
             pewpew.GetComponent<Rigidbody>().linearVelocity = top.transform.forward * projectileSpeed;
             pewpew.GetComponent<BulletMove>().damage = projectileDamage;
+            pewpew.GetComponent<BulletMove>().lifeTime = 20;
             shootCooldown = maxShootCooldown;
         }
     }
@@ -125,5 +126,10 @@ public class TankMovement : MonoBehaviour
         {
             Destroy(gameObject);
         }
+    }
+    private void OnDestroy()
+    {
+        Inputsystem.PlayerKeyboard.Disable();
+        Inputsystem.PlayerController.Disable();
     }
 }
