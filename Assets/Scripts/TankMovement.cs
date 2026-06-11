@@ -9,14 +9,25 @@ public class TankMovement : MonoBehaviour
     [SerializeField] private GameObject top;
     [SerializeField] private GameObject bottom;
 
+    private UISwitch UIController;
+
     private Vector2 moveDir;
     public float speed = 5f;
 
     private Vector2 rotationDir;
 
     public float rotateSpeed = 100;
+
+    public int health = 3;
+
+    [SerializeField] private GameObject bullet;
+    private float shootCooldown = 0;
+    private float maxShootCooldown = 0.5f;
+    private float projectileSpeed = 10f;
+    private int projectileDamage = 1;
     void Start()
     {
+        UIController = FindFirstObjectByType<UISwitch>();
         Inputsystem = new InputSystem_Actions();
         if (input == "Keyboard")
         {
@@ -25,6 +36,7 @@ public class TankMovement : MonoBehaviour
             Inputsystem.PlayerKeyboard.Move.canceled += Move;
             Inputsystem.PlayerKeyboard.Rotate.performed += Rotate;
             Inputsystem.PlayerKeyboard.Rotate.canceled += Rotate;
+            Inputsystem.PlayerKeyboard.Attack.performed += Shoot;
         }
         else if (input == "Controller")
         {
@@ -33,6 +45,7 @@ public class TankMovement : MonoBehaviour
             Inputsystem.PlayerController.Move.canceled += Move;
             Inputsystem.PlayerController.Rotate.performed += Rotate;
             Inputsystem.PlayerController.Rotate.canceled += Rotate;
+            Inputsystem.PlayerController.Attack.performed += Shoot;
         }
     }
     
@@ -82,6 +95,10 @@ public class TankMovement : MonoBehaviour
             bottom.transform.rotation = Quaternion.Euler(0, spin, 0);
         }
 
+        if (shootCooldown > 0)
+        {
+            shootCooldown -= Time.deltaTime;
+        }
     }
     private void Move(InputAction.CallbackContext context)
     {
@@ -90,5 +107,23 @@ public class TankMovement : MonoBehaviour
     private void Rotate(InputAction.CallbackContext context)
     {
         rotationDir = context.ReadValue<Vector2>();
+    }
+    private void Shoot(InputAction.CallbackContext context)
+    {
+        if (shootCooldown <= 0)
+        {
+            var pewpew = Instantiate(bullet, top.transform.position + top.transform.forward * 2, Quaternion.identity);
+            pewpew.GetComponent<Rigidbody>().linearVelocity = top.transform.forward * projectileSpeed;
+            pewpew.GetComponent<BulletMove>().damage = projectileDamage;
+            shootCooldown = maxShootCooldown;
+        }
+    }
+    public void TakeDamage(int damage)
+    {
+        health -= damage;
+        if (health <= 0)
+        {
+            Destroy(gameObject);
+        }
     }
 }

@@ -7,6 +7,8 @@ public class UISwitch : MonoBehaviour
     [SerializeField] private Canvas[] UIs;
 
     [SerializeField] private TextMeshProUGUI txtVictor;
+
+    [SerializeField] private GameObject[] Tanks;
     void Start()
     {
         UIs[1].enabled = false;
@@ -18,7 +20,14 @@ public class UISwitch : MonoBehaviour
         switch (mode)
         {
             case 0:
-
+                //if ()
+                {
+                    Instantiate(Tanks[0], new Vector3(-15, 0, -5), Quaternion.identity);
+                    Instantiate(Tanks[1], new Vector3(15, 0, -5), Quaternion.identity);
+                    mode = 1;
+                    UIs[0].enabled = false;
+                    UIs[1].enabled = true;
+                }
                 break;
             case 1:
 
