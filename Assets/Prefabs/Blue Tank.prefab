@@ -390,6 +390,7 @@ MonoBehaviour:
   input: Keyboard
   top: {fileID: 2334486090622217888}
   bottom: {fileID: 637599527929931881}
+  color: Blue
   speed: 5
   rotateSpeed: 150
   health: 3
@@ -416,10 +417,10 @@ Rigidbody:
     m_Bits: 0
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
-  m_UseGravity: 0
-  m_IsKinematic: 1
+  m_UseGravity: 1
+  m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 0
+  m_Constraints: 112
   m_CollisionDetection: 0
 --- !u!1 &5930605554874439978
 GameObject:

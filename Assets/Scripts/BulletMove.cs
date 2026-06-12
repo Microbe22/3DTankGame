@@ -22,11 +22,12 @@ public class BulletMove : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Tank"))
         {
-            collision.gameObject.GetComponent<TankMovement>().TakeDamage(damage);
             Destroy(gameObject);
+            collision.gameObject.GetComponent<TankMovement>().TakeDamage(damage);
         }
         else
         {
+            Destroy(gameObject);
             //bounce
         }
     }

@@ -11,6 +11,8 @@ public class TankMovement : MonoBehaviour
 
     private UISwitch UIController;
 
+    [SerializeField] string color;
+
     private Vector2 moveDir;
     public float speed = 5f;
 
@@ -23,8 +25,9 @@ public class TankMovement : MonoBehaviour
     [SerializeField] private GameObject bullet;
     private float shootCooldown = 0;
     private float maxShootCooldown = 0.5f;
-    private float projectileSpeed = 15f;
+    private float projectileSpeed = 18f;
     private int projectileDamage = 1;
+    private bool shoot = false;
     void Start()
     {
         UIController = FindFirstObjectByType<UISwitch>();
@@ -99,6 +102,19 @@ public class TankMovement : MonoBehaviour
         {
             shootCooldown -= Time.deltaTime;
         }
+
+        if (shoot == true)
+        {
+            if (shootCooldown <= 0)
+            {
+                var pewpew = Instantiate(bullet, top.transform.position + top.transform.forward * 1.6f, Quaternion.identity);
+                pewpew.GetComponent<Rigidbody>().linearVelocity = top.transform.forward * projectileSpeed;
+                pewpew.GetComponent<BulletMove>().damage = projectileDamage;
+                pewpew.GetComponent<BulletMove>().lifeTime = 20;
+                shootCooldown = maxShootCooldown;
+            }
+            shoot = false;
+        }
     }
     private void Move(InputAction.CallbackContext context)
     {
@@ -110,21 +126,19 @@ public class TankMovement : MonoBehaviour
     }
     private void Shoot(InputAction.CallbackContext context)
     {
-        if (shootCooldown <= 0)
-        {
-            var pewpew = Instantiate(bullet, top.transform.position + top.transform.forward * 2, Quaternion.identity);
-            pewpew.GetComponent<Rigidbody>().linearVelocity = top.transform.forward * projectileSpeed;
-            pewpew.GetComponent<BulletMove>().damage = projectileDamage;
-            pewpew.GetComponent<BulletMove>().lifeTime = 20;
-            shootCooldown = maxShootCooldown;
-        }
+        shoot = true;
     }
     public void TakeDamage(int damage)
     {
-        health -= damage;
-        if (health <= 0)
+        if (UIController.mode == 1)
         {
-            Destroy(gameObject);
+            health -= damage;
+            UIController.SetHearts(color, health);
+            if (health <= 0)
+            {
+                Destroy(gameObject);
+                UIController.Switch(2, color);
+            }
         }
     }
     private void OnDestroy()
