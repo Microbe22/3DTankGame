@@ -1,13 +1,12 @@
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.InputSystem.UI;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class UISwitch : MonoBehaviour
 {
-    public int mode = 0; //0 = combat, 1 = victory screen
+    public int mode = 0; //0 = main menu, 1 = combat, 2 = victory screen
     [SerializeField] private Canvas[] UIs;
 
     [SerializeField] private TextMeshProUGUI txtVictor;
@@ -22,31 +21,28 @@ public class UISwitch : MonoBehaviour
     [SerializeField] private TextMeshProUGUI txtBlueScore;
     [SerializeField] private TextMeshProUGUI txtRedScore;
 
-    private InputSystemUIInputModule UIInput;
+    private InputSystem_Actions Inputsystem;
+    private List<GameObject> tanks = new List<GameObject>();
     void Start()
     {
-        UIInput = GetComponent<InputSystemUIInputModule>();
-
         UIs[1].enabled = false;
+        UIs[2].enabled = false;
+
+        Inputsystem = new InputSystem_Actions();
+        Inputsystem.PlayerController.Enable();
+        Inputsystem.PlayerController.Play.performed += Play;
+        Inputsystem.PlayerController.Back.performed += Exit;
+
+        Inputsystem.PlayerKeyboard.Enable();
+        Inputsystem.PlayerKeyboard.Play.performed += Play;
+        Inputsystem.PlayerKeyboard.Back.performed += Exit;
     }
-    private void Update()
+
+    void Update()
     {
-        print(UIInput.cancel);
-        if (UIInput.submit == true)
-        {
-            if (mode == 1)
-            {
-                SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-            }
-        }
-        if (UIInput.cancel == true)
-        {
-            if (mode == 1)
-            {
-                SceneManager.LoadScene("Main Menu");
-            }
-        }
+        
     }
+
     public void Switch(int canvas, string loser)
     {
         mode = canvas;
@@ -56,7 +52,7 @@ public class UISwitch : MonoBehaviour
         }
         UIs[canvas].enabled = true;
 
-        if (canvas == 1)
+        if (canvas == 2)
         {
             if (loser == "Blue")
             {
@@ -74,13 +70,48 @@ public class UISwitch : MonoBehaviour
             }
         }
     }
-    public void OnSubmit(InputValue context)
+    private void Play(InputAction.CallbackContext context)
     {
-        
+        switch (mode)
+        {
+            case 0:
+                CreateTanks();
+                UIs[0].enabled = false;
+                UIs[1].enabled = true;
+                break;
+            case 1:
+
+                break;
+            case 2:
+                CreateTanks();
+                UIs[2].enabled = false;
+                UIs[1].enabled = true;
+                DeleteBullets();
+                break;
+        }
     }
-    public void OnCancel(InputValue context)
+    private void Exit(InputAction.CallbackContext context)
+    { 
+        Application.Quit();
+    }
+    private void CreateTanks()
     {
-        
+        foreach (GameObject tank in tanks)
+        {
+            Destroy(tank);
+        }
+        tanks.Clear();
+        tanks.Add(Instantiate(Tanks[0], new Vector3(-15, 0, -5), Quaternion.identity));
+        tanks.Add(Instantiate(Tanks[1], new Vector3(15, 0, -5), Quaternion.identity));
+        mode = 1;
+        foreach (Image Heart in blueHearts)
+        {
+            Heart.enabled = true;
+        }
+        foreach (Image Heart in redHearts)
+        {
+            Heart.enabled = true;
+        }
     }
     public void SetHearts(string color, int amount)
     {
@@ -105,6 +136,14 @@ public class UISwitch : MonoBehaviour
             {
                 blueHearts[i].enabled = true;
             }
+        }
+    }
+    private void DeleteBullets()
+    {
+        BulletMove[] bullets = FindObjectsByType<BulletMove>(FindObjectsSortMode.None);
+        foreach (BulletMove b in bullets)
+        {
+            Destroy(b.gameObject);
         }
     }
 }

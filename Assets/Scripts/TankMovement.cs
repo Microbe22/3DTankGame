@@ -1,15 +1,17 @@
+using System.Data.Common;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class TankMovement : MonoBehaviour
 {
     [SerializeField] private string input;
+    private InputSystem_Actions Inputsystem;
     [SerializeField] private GameObject top;
     [SerializeField] private GameObject bottom;
 
     private UISwitch UIController;
 
-    public string color;
+    [SerializeField] string color;
 
     private Vector2 moveDir;
     public float speed = 5f;
@@ -22,28 +24,42 @@ public class TankMovement : MonoBehaviour
 
     [SerializeField] private GameObject bullet;
     private float shootCooldown = 0;
-    public float maxShootCooldown = 0.5f;
-    public float projectileSpeed = 18f;
+    private float maxShootCooldown = 0.5f;
+    private float projectileSpeed = 18f;
     private int projectileDamage = 1;
-
-    public float powerupTimer = 0;
+    private bool shoot = false;
     void Start()
     {
         UIController = FindFirstObjectByType<UISwitch>();
+        Inputsystem = new InputSystem_Actions();
+        if (input == "Keyboard")
+        {
+            Inputsystem.PlayerKeyboard.Enable();
+            Inputsystem.PlayerKeyboard.Move.performed += Move;
+            Inputsystem.PlayerKeyboard.Move.canceled += Move;
+            Inputsystem.PlayerKeyboard.Rotate.performed += Rotate;
+            Inputsystem.PlayerKeyboard.Rotate.canceled += Rotate;
+            Inputsystem.PlayerKeyboard.Attack.performed += Shoot;
+        }
+        else if (input == "Controller")
+        {
+            Inputsystem.PlayerController.Enable();
+            Inputsystem.PlayerController.Move.performed += Move;
+            Inputsystem.PlayerController.Move.canceled += Move;
+            Inputsystem.PlayerController.Rotate.performed += Rotate;
+            Inputsystem.PlayerController.Rotate.canceled += Rotate;
+            Inputsystem.PlayerController.Attack.performed += Shoot;
+        }
     }
     
     void Update()
     {
-        //move
         transform.Translate(speed * Time.deltaTime * new Vector3(moveDir.x, 0, moveDir.y), Space.Self);
-
-        //rotate top (only when standing still)
         if (moveDir.magnitude == 0)
         {
             top.transform.rotation = Quaternion.Euler(0, top.transform.rotation.eulerAngles.y + (rotationDir.x * rotateSpeed * Time.deltaTime), 0);
         }
 
-        //rotate bottom
         var spin = 0;
         if (moveDir.x > 0)
         {
@@ -76,6 +92,7 @@ public class TankMovement : MonoBehaviour
                 spin = 180;
             }
         }
+
         if (moveDir.magnitude != 0)
         {
             bottom.transform.rotation = Quaternion.Euler(0, spin, 0);
@@ -86,53 +103,47 @@ public class TankMovement : MonoBehaviour
             shootCooldown -= Time.deltaTime;
         }
 
-        //if the player has a powerup
-        if (powerupTimer > 0)
+        if (shoot == true)
         {
-            //reduce remaining powerup time
-            powerupTimer -= Time.deltaTime;
-            //if time up
-            if (powerupTimer <= 0)
+            if (shootCooldown <= 0)
             {
-                //reset stats to default
-                speed = 5f;
-                rotateSpeed = 100;
-                maxShootCooldown = 0.5f;
-                projectileSpeed = 18f;
+                var pewpew = Instantiate(bullet, top.transform.position + top.transform.forward * 1.6f, Quaternion.identity);
+                pewpew.GetComponent<Rigidbody>().linearVelocity = top.transform.forward * projectileSpeed;
+                pewpew.GetComponent<BulletMove>().damage = projectileDamage;
+                pewpew.GetComponent<BulletMove>().lifeTime = 20;
+                shootCooldown = maxShootCooldown;
             }
+            shoot = false;
         }
     }
-    public void OnMove(InputValue context)
+    private void Move(InputAction.CallbackContext context)
     {
-        moveDir = context.Get<Vector2>();
+        moveDir = context.ReadValue<Vector2>();
     }
-    public void OnRotate(InputValue context)
+    private void Rotate(InputAction.CallbackContext context)
     {
-        rotationDir = context.Get<Vector2>();
+        rotationDir = context.ReadValue<Vector2>();
     }
-    public void OnShoot(InputValue context)
+    private void Shoot(InputAction.CallbackContext context)
     {
-        if (shootCooldown <= 0)
-        {
-            var pewpew = Instantiate(bullet, top.transform.position + top.transform.forward * 1.6f, Quaternion.identity);
-            pewpew.GetComponent<Rigidbody>().linearVelocity = top.transform.forward * projectileSpeed;
-            pewpew.GetComponent<BulletMove>().damage = projectileDamage;
-            pewpew.GetComponent<BulletMove>().lifeTime = 10;
-            shootCooldown = maxShootCooldown;
-        }
-        TakeDamage(1);
+        shoot = true;
     }
     public void TakeDamage(int damage)
     {
-        if (UIController.mode == 0)
+        if (UIController.mode == 1)
         {
             health -= damage;
             UIController.SetHearts(color, health);
             if (health <= 0)
             {
                 Destroy(gameObject);
-                UIController.Switch(1, color);
+                UIController.Switch(2, color);
             }
         }
+    }
+    private void OnDestroy()
+    {
+        Inputsystem.PlayerKeyboard.Disable();
+        Inputsystem.PlayerController.Disable();
     }
 }
