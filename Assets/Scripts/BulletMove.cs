@@ -5,6 +5,8 @@ public class BulletMove : MonoBehaviour
     public int damage;
     public float lifeTime;
     public int bounces;
+
+    private bool hit = false;
     void Start()
     {
         
@@ -20,10 +22,11 @@ public class BulletMove : MonoBehaviour
     }
     private void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.CompareTag("Tank"))
+        if (collision.gameObject.CompareTag("Tank") && hit == false)
         {
             Destroy(gameObject);
             collision.gameObject.GetComponent<TankMovement>().TakeDamage(damage);
+            hit = true;
         }
         else
         {

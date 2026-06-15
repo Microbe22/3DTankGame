@@ -351,6 +351,7 @@ GameObject:
   - component: {fileID: 4055303119673010748}
   - component: {fileID: 8970082036315271298}
   - component: {fileID: 5343884352958745295}
+  - component: {fileID: 4527545604073465727}
   m_Layer: 0
   m_Name: Red Tank
   m_TagString: Tank
@@ -395,6 +396,9 @@ MonoBehaviour:
   rotateSpeed: 150
   health: 3
   bullet: {fileID: 6848132621634172575, guid: b89d939134436624e926008b57104d3c, type: 3}
+  maxShootCooldown: 0.5
+  projectileSpeed: 18
+  powerupTimer: 0
 --- !u!54 &5343884352958745295
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -422,6 +426,36 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 112
   m_CollisionDetection: 0
+--- !u!114 &4527545604073465727
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4225581671243845336}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62899f850307741f2a39c98a8b639597, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.InputSystem::UnityEngine.InputSystem.PlayerInput
+  m_Actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+  m_NotificationBehavior: 0
+  m_UIInputModule: {fileID: 0}
+  m_DeviceLostEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_DeviceRegainedEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_ControlsChangedEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_ActionEvents: []
+  m_NeverAutoSwitchControlSchemes: 1
+  m_DefaultControlScheme: Gamepad
+  m_DefaultActionMap: Tank
+  m_SplitScreenIndex: -1
+  m_Camera: {fileID: 0}
 --- !u!1 &5930605554874439978
 GameObject:
   m_ObjectHideFlags: 0
