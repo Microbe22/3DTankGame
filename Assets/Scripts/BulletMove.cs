@@ -7,11 +7,6 @@ public class BulletMove : MonoBehaviour
     public int bounces;
 
     private bool hit = false;
-    void Start()
-    {
-        
-    }
-
     void Update()
     {
         lifeTime -= Time.deltaTime;

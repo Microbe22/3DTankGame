@@ -24,10 +24,11 @@ public class TankMovement : MonoBehaviour
 
     [SerializeField] private GameObject bullet;
     private float shootCooldown = 0;
-    private float maxShootCooldown = 0.5f;
-    private float projectileSpeed = 18f;
+    public float maxShootCooldown = 0.5f;
+    public float projectileSpeed = 18f;
     private int projectileDamage = 1;
-    private bool shoot = false;
+
+    public float powerupTimer = 0;
     void Start()
     {
         UIController = FindFirstObjectByType<UISwitch>();
@@ -103,17 +104,16 @@ public class TankMovement : MonoBehaviour
             shootCooldown -= Time.deltaTime;
         }
 
-        if (shoot == true)
+        if (powerupTimer > 0)
         {
-            if (shootCooldown <= 0)
+            powerupTimer -= Time.deltaTime;
+            if (powerupTimer <= 0)
             {
-                var pewpew = Instantiate(bullet, top.transform.position + top.transform.forward * 1.6f, Quaternion.identity);
-                pewpew.GetComponent<Rigidbody>().linearVelocity = top.transform.forward * projectileSpeed;
-                pewpew.GetComponent<BulletMove>().damage = projectileDamage;
-                pewpew.GetComponent<BulletMove>().lifeTime = 20;
-                shootCooldown = maxShootCooldown;
+                speed = 5f;
+                rotateSpeed = 100;
+                maxShootCooldown = 0.5f;
+                projectileSpeed = 18f;
             }
-            shoot = false;
         }
     }
     private void Move(InputAction.CallbackContext context)
@@ -126,18 +126,25 @@ public class TankMovement : MonoBehaviour
     }
     private void Shoot(InputAction.CallbackContext context)
     {
-        shoot = true;
+        if (shootCooldown <= 0)
+        {
+            var pewpew = Instantiate(bullet, top.transform.position + top.transform.forward * 1.6f, Quaternion.identity);
+            pewpew.GetComponent<Rigidbody>().linearVelocity = top.transform.forward * projectileSpeed;
+            pewpew.GetComponent<BulletMove>().damage = projectileDamage;
+            pewpew.GetComponent<BulletMove>().lifeTime = 20;
+            shootCooldown = maxShootCooldown;
+        }
     }
     public void TakeDamage(int damage)
     {
-        if (UIController.mode == 1)
+        if (UIController.mode == 0)
         {
             health -= damage;
             UIController.SetHearts(color, health);
             if (health <= 0)
             {
                 Destroy(gameObject);
-                UIController.Switch(2, color);
+                UIController.Switch(1, color);
             }
         }
     }

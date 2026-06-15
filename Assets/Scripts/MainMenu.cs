@@ -10,11 +10,23 @@ public class MainMenu : MonoBehaviour
 
     [SerializeField] private Canvas canvas;
     [SerializeField] private Image arrow;
+
+
+    private InputSystem_Actions Inputsystem;
     void Start()
     {
+        Inputsystem = new InputSystem_Actions();
+        Inputsystem.PlayerController.Enable();
+        Inputsystem.PlayerController.Play.performed += Play;
+        Inputsystem.PlayerController.Back.performed += Exit;
+        Inputsystem.PlayerController.Move.performed += Move;
 
+        Inputsystem.PlayerKeyboard.Enable();
+        Inputsystem.PlayerKeyboard.Play.performed += Play;
+        Inputsystem.PlayerKeyboard.Back.performed += Exit;
+        Inputsystem.PlayerKeyboard.Move.performed += Move;
     }
-    public void OnSelect(InputValue context)
+    public void Play(InputAction.CallbackContext context)
     {
         switch (choice)
         {
@@ -29,17 +41,17 @@ public class MainMenu : MonoBehaviour
                 break;
         }
     }
-    public void OnCancel(InputValue context)
+    public void Exit(InputAction.CallbackContext context)
     {
         Application.Quit();
     }
-    public void OnNavigate(InputValue context)
+    public void Move(InputAction.CallbackContext context)
     {
-        if (context.Get<Vector2>().x < 0)
+        if (context.ReadValue<Vector2>().x < 0)
         {
             choice--;
         }
-        else if (context.Get<Vector2>().x > 0)
+        else if (context.ReadValue<Vector2>().x > 0)
         {
             choice++;
         }
@@ -63,5 +75,10 @@ public class MainMenu : MonoBehaviour
                 arrow.transform.position = new Vector2(572, arrow.transform.position.y);
                 break;
         }
+    }
+    private void OnDestroy()
+    {
+        Inputsystem.PlayerKeyboard.Disable();
+        Inputsystem.PlayerController.Disable();
     }
 }
