@@ -1,17 +1,16 @@
-using System.Data.Common;
+using System.Drawing;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.XR;
 
-public class TankMovement : MonoBehaviour
+public class EnemyTankMovement : MonoBehaviour
 {
-    [SerializeField] private string input;
-    private InputSystem_Actions Inputsystem;
     [SerializeField] private GameObject top;
     [SerializeField] private GameObject bottom;
 
     private UISwitch UIController;
 
-    [SerializeField] string color;
+    [SerializeField] string enemyType; //0 = stationary, 1 = basic, 2 = mines, 3 = projectile speed
 
     private Vector2 moveDir;
     public float speed = 5f;
@@ -27,31 +26,12 @@ public class TankMovement : MonoBehaviour
     public float maxShootCooldown = 0.5f;
     public float projectileSpeed = 18f;
     private int projectileDamage = 1;
-    private int projectileBounces = 3;
 
     public float powerupTimer = 0;
     void Start()
     {
         UIController = FindFirstObjectByType<UISwitch>();
-        Inputsystem = new InputSystem_Actions();
-        if (input == "Keyboard")
-        {
-            Inputsystem.PlayerKeyboard.Enable();
-            Inputsystem.PlayerKeyboard.Move.performed += Move;
-            Inputsystem.PlayerKeyboard.Move.canceled += Move;
-            Inputsystem.PlayerKeyboard.Rotate.performed += Rotate;
-            Inputsystem.PlayerKeyboard.Rotate.canceled += Rotate;
-            Inputsystem.PlayerKeyboard.Attack.performed += Shoot;
-        }
-        else if (input == "Controller")
-        {
-            Inputsystem.PlayerController.Enable();
-            Inputsystem.PlayerController.Move.performed += Move;
-            Inputsystem.PlayerController.Move.canceled += Move;
-            Inputsystem.PlayerController.Rotate.performed += Rotate;
-            Inputsystem.PlayerController.Rotate.canceled += Rotate;
-            Inputsystem.PlayerController.Attack.performed += Shoot;
-        }
+        UIController.liveEnemies++;
     }
     
     void Update()
@@ -117,14 +97,6 @@ public class TankMovement : MonoBehaviour
             }
         }
     }
-    private void Move(InputAction.CallbackContext context)
-    {
-        moveDir = context.ReadValue<Vector2>();
-    }
-    private void Rotate(InputAction.CallbackContext context)
-    {
-        rotationDir = context.ReadValue<Vector2>();
-    }
     private void Shoot(InputAction.CallbackContext context)
     {
         if (shootCooldown <= 0)
@@ -133,26 +105,20 @@ public class TankMovement : MonoBehaviour
             pewpew.GetComponent<Rigidbody>().linearVelocity = top.transform.forward * projectileSpeed;
             pewpew.GetComponent<BulletMove>().damage = projectileDamage;
             pewpew.GetComponent<BulletMove>().lifeTime = 20;
-            pewpew.GetComponent<BulletMove>().bounces = projectileBounces;
             shootCooldown = maxShootCooldown;
         }
     }
     public void TakeDamage(int damage)
     {
-        if (UIController.mode == 0)
+        health -= damage;
+        if (health <= 0)
         {
-            health -= damage;
-            UIController.SetHearts(color, health);
-            if (health <= 0)
+            Destroy(gameObject);
+            UIController.liveEnemies--;
+            if (UIController.liveEnemies <= 0)
             {
-                Destroy(gameObject);
-                UIController.Switch(1, color);
+                UIController.NextLevel();
             }
         }
-    }
-    private void OnDestroy()
-    {
-        Inputsystem.PlayerKeyboard.Disable();
-        Inputsystem.PlayerController.Disable();
     }
 }

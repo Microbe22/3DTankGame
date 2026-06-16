@@ -26,6 +26,9 @@ public class UISwitch : MonoBehaviour
     private List<GameObject> tanks = new List<GameObject>();
 
     private PowerupSpawning powerupSpawner;
+
+    private int currentLevel = 1;
+    public int liveEnemies = 0;
     void Start()
     {
         powerupSpawner = FindFirstObjectByType<PowerupSpawning>();
@@ -140,6 +143,11 @@ public class UISwitch : MonoBehaviour
         {
             Destroy(b.gameObject);
         }
+    }
+    public void NextLevel()
+    {
+        currentLevel++;
+        SceneManager.LoadScene("Level " + currentLevel);
     }
     private void OnDestroy()
     {
