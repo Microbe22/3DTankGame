@@ -53,11 +53,11 @@ public class BulletMove : MonoBehaviour
             {
                 bounces -= 1;
                 //bounce
-                if (collision.GetContact(0).normal.x == 0)
+                if (collision.GetContact(0).normal.z != 0)
                 {
                     rb.linearVelocity = new Vector3(speedX, rb.linearVelocity.y, speedZ * -1);
                 }
-                else
+                if (collision.GetContact(0).normal.x != 0)
                 {
                     rb.linearVelocity = new Vector3(speedX * -1, rb.linearVelocity.y, speedZ);
                 }
