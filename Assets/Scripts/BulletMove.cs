@@ -23,9 +23,7 @@ public class BulletMove : MonoBehaviour
         {
             Destroy(gameObject);
         }
-    }
-    private void FixedUpdate()
-    {
+
         if (rb.linearVelocity.x != 0)
         {
             speedX = rb.linearVelocity.x;
@@ -53,13 +51,13 @@ public class BulletMove : MonoBehaviour
             {
                 bounces -= 1;
                 //bounce
-                if (collision.GetContact(0).normal.z != 0)
+                if (Mathf.Abs(collision.GetContact(0).normal.z) > 0.1f)
                 {
                     rb.linearVelocity = new Vector3(speedX, rb.linearVelocity.y, speedZ * -1);
                 }
-                if (collision.GetContact(0).normal.x != 0)
+                if (Mathf.Abs(collision.GetContact(0).normal.x) > 0.1f)
                 {
-                    rb.linearVelocity = new Vector3(speedX * -1, rb.linearVelocity.y, speedZ);
+                    rb.linearVelocity = new Vector3(speedX * -1, rb.linearVelocity.y, rb.linearVelocity.z);
                 }
             }
             else
