@@ -27,14 +27,22 @@ public class UISwitch : MonoBehaviour
 
     private PowerupSpawning powerupSpawner;
 
-    private int currentLevel = 1;
     public int liveEnemies = 0;
+
+    private Global tracker;
+    [SerializeField] private Vector3 spawnposBlue;
+    [SerializeField] private Vector3 spawnposRed;
     void Start()
     {
+        tracker = FindFirstObjectByType<Global>();
+
         powerupSpawner = FindFirstObjectByType<PowerupSpawning>();
 
         UIs[0].enabled = true;
-        UIs[1].enabled = false;
+        if (SceneManager.GetActiveScene().name == "PvP")
+        {
+            UIs[1].enabled = false;
+        }
 
         Inputsystem = new InputSystem_Actions();
         Inputsystem.PlayerController.Enable();
@@ -99,17 +107,20 @@ public class UISwitch : MonoBehaviour
             Destroy(tank);
         }
         tanks.Clear();
-        tanks.Add(Instantiate(Tanks[0], new Vector3(-15, 0, -10), Quaternion.identity));
-        tanks.Add(Instantiate(Tanks[1], new Vector3(15, 0, -10), Quaternion.identity));
-        mode = 0;
+        tanks.Add(Instantiate(Tanks[0], spawnposBlue, Quaternion.identity));
         foreach (Image Heart in blueHearts)
         {
             Heart.enabled = true;
         }
-        foreach (Image Heart in redHearts)
+        if (tracker.players == 2 || tracker.PvP == true)
         {
-            Heart.enabled = true;
+            tanks.Add(Instantiate(Tanks[1], spawnposRed, Quaternion.identity));
+            foreach (Image Heart in redHearts)
+            {
+                Heart.enabled = true;
+            }
         }
+        mode = 0;
     }
     public void SetHearts(string color, int amount)
     {
@@ -146,8 +157,8 @@ public class UISwitch : MonoBehaviour
     }
     public void NextLevel()
     {
-        currentLevel++;
-        SceneManager.LoadScene("Level " + currentLevel);
+        tracker.currentLevel++;
+        SceneManager.LoadScene("Level " + tracker.currentLevel);
     }
     private void OnDestroy()
     {

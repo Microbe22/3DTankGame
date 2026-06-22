@@ -1,6 +1,7 @@
 using System.Data.Common;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 
 public class TankMovement : MonoBehaviour
 {
@@ -11,7 +12,7 @@ public class TankMovement : MonoBehaviour
 
     private UISwitch UIController;
 
-    [SerializeField] string color;
+    [SerializeField] private string color;
 
     private Vector2 moveDir;
     public float speed = 5f;
@@ -129,11 +130,14 @@ public class TankMovement : MonoBehaviour
     {
         if (shootCooldown <= 0)
         {
+            GetComponent<AudioSource>().Play();
+
             var pewpew = Instantiate(bullet, top.transform.position + top.transform.forward * 1.6f, Quaternion.identity);
             pewpew.GetComponent<Rigidbody>().linearVelocity = top.transform.forward * projectileSpeed;
             pewpew.GetComponent<BulletMove>().damage = projectileDamage;
             pewpew.GetComponent<BulletMove>().lifeTime = 20;
             pewpew.GetComponent<BulletMove>().bounces = projectileBounces;
+            pewpew.GetComponent<BulletMove>().shooter = color;
             shootCooldown = maxShootCooldown;
         }
     }
@@ -146,7 +150,10 @@ public class TankMovement : MonoBehaviour
             if (health <= 0)
             {
                 Destroy(gameObject);
-                UIController.Switch(1, color);
+                if (SceneManager.GetActiveScene().name == "PvP")
+                {
+                    UIController.Switch(1, color);
+                }
             }
         }
     }

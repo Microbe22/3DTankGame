@@ -12,6 +12,11 @@ public class BulletMove : MonoBehaviour
 
     private float speedX;
     private float speedZ;
+
+    private bool xBounce;
+    private bool zBounce;
+
+    public string shooter;
     private void Start()
     {
         rb = GetComponent<Rigidbody>();
@@ -32,6 +37,8 @@ public class BulletMove : MonoBehaviour
         {
             speedZ = rb.linearVelocity.z;
         }
+        xBounce = false;
+        zBounce = false;
     }
     private void OnCollisionEnter(Collision collision)
     {
@@ -45,19 +52,27 @@ public class BulletMove : MonoBehaviour
         {
             Destroy(gameObject);
         }
+        else if (collision.gameObject.CompareTag("EnemyTank") && hit == false)
+        {
+            Destroy(gameObject);
+            collision.gameObject.GetComponent<EnemyTankMovement>().TakeDamage(damage);
+            hit = true;
+        }
         else
         {
             if (bounces > 0)
             {
                 bounces -= 1;
                 //bounce
-                if (Mathf.Abs(collision.GetContact(0).normal.z) > 0.1f)
-                {
-                    rb.linearVelocity = new Vector3(speedX, rb.linearVelocity.y, speedZ * -1);
-                }
-                if (Mathf.Abs(collision.GetContact(0).normal.x) > 0.1f)
+                if (Mathf.Abs(collision.GetContact(0).normal.x) > 0.1f && xBounce == false)
                 {
                     rb.linearVelocity = new Vector3(speedX * -1, rb.linearVelocity.y, rb.linearVelocity.z);
+                    xBounce = true;
+                }
+                if (Mathf.Abs(collision.GetContact(0).normal.z) > 0.1f && zBounce == false)
+                {
+                    rb.linearVelocity = new Vector3(speedX, rb.linearVelocity.y, speedZ * -1);
+                    zBounce = true;
                 }
             }
             else
@@ -65,5 +80,9 @@ public class BulletMove : MonoBehaviour
                 Destroy(gameObject);
             }
         }
+    }
+    void MakeSound()
+    {
+
     }
 }

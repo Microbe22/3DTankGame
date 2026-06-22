@@ -11,10 +11,13 @@ public class MainMenu : MonoBehaviour
     [SerializeField] private Canvas canvas;
     [SerializeField] private Image arrow;
 
-
     private InputSystem_Actions Inputsystem;
+
+    private Global tracker;
     void Start()
     {
+        tracker = FindFirstObjectByType<Global>();
+
         Inputsystem = new InputSystem_Actions();
         Inputsystem.PlayerController.Enable();
         Inputsystem.PlayerController.Play.performed += Play;
@@ -31,13 +34,20 @@ public class MainMenu : MonoBehaviour
         switch (choice)
         {
             case 1:
+                tracker.PvP = true;
                 SceneManager.LoadScene("PvP");
                 break;
             case 2:
-                //singleplayer
+                tracker.PvP = false;
+                tracker.players = 1;
+                tracker.currentLevel = 1;
+                SceneManager.LoadScene("Level 1");
                 break;
             case 3:
-                //multiplayer
+                tracker.PvP = false;
+                tracker.players = 2;
+                tracker.currentLevel = 1;
+                SceneManager.LoadScene("Level 1");
                 break;
         }
     }
@@ -66,13 +76,13 @@ public class MainMenu : MonoBehaviour
         switch (choice)
         {
             case 1:
-                arrow.transform.position = new Vector2(109, arrow.transform.position.y);
+                arrow.transform.position = new Vector2(107, arrow.transform.position.y);
                 break;
             case 2:
-                arrow.transform.position = new Vector2(326, arrow.transform.position.y);
+                arrow.transform.position = new Vector2(316, arrow.transform.position.y);
                 break;
             case 3:
-                arrow.transform.position = new Vector2(572, arrow.transform.position.y);
+                arrow.transform.position = new Vector2(556, arrow.transform.position.y);
                 break;
         }
     }

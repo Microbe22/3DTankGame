@@ -3,6 +3,9 @@ using UnityEngine;
 
 public class Global : MonoBehaviour
 {
+    public bool PvP = false;
+    public int players = 0;
+    public int currentLevel = 0;
     void Start()
     {
         DontDestroyOnLoad(gameObject);

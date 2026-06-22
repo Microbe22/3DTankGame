@@ -6,13 +6,15 @@ public class PowerupType : MonoBehaviour
     public GameObject spawner;
 
     [SerializeField] private Material[] materials;
+
+    private bool triggered = false;
     private void Start()
     {
         GetComponent<Renderer>().material = materials[type];
     }
     private void OnCollisionEnter(Collision other)
     {
-        if (other.gameObject.CompareTag("Tank"))
+        if (other.gameObject.CompareTag("Tank") && triggered == false)
         {
             var tank = other.gameObject.GetComponent<TankMovement>();
             switch (type)
@@ -37,6 +39,7 @@ public class PowerupType : MonoBehaviour
             tank.powerupTimer = 10;
             spawner.GetComponent<PowerupSpawning>().spawn = null;
             spawner.GetComponent<PowerupSpawning>().timer = 20;
+            triggered = true;
             Destroy(gameObject);
         }
     }
