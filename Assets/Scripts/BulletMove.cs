@@ -46,16 +46,19 @@ public class BulletMove : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Tank") && hit == false)
         {
+            MakeSound();
             Destroy(gameObject);
             collision.gameObject.GetComponent<TankMovement>().TakeDamage(damage);
             hit = true;
         }
         else if (collision.gameObject.CompareTag("Bullet"))
         {
+            MakeSound();
             Destroy(gameObject);
         }
         else if (collision.gameObject.CompareTag("EnemyTank") && hit == false)
         {
+            MakeSound();
             Destroy(gameObject);
             collision.gameObject.GetComponent<EnemyTankMovement>().TakeDamage(damage);
             hit = true;
@@ -68,7 +71,7 @@ public class BulletMove : MonoBehaviour
                 //bounce
                 if (Mathf.Abs(collision.GetContact(0).normal.x) > 0.1f && xBounce == false)
                 {
-                    rb.linearVelocity = new Vector3(speedX * -1, rb.linearVelocity.y, rb.linearVelocity.z);
+                    rb.linearVelocity = new Vector3(speedX * -1, rb.linearVelocity.y, speedZ);
                     xBounce = true;
                     if (transform.rotation.y < 0)
                     {
@@ -103,13 +106,10 @@ public class BulletMove : MonoBehaviour
             }
             else
             {
+                MakeSound();
                 Destroy(gameObject);
             }
         }
-    }
-    private void OnDestroy()
-    {
-        MakeSound();
     }
     void MakeSound()
     {

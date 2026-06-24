@@ -80,6 +80,7 @@ public class UISwitch : MonoBehaviour
                 blueScore++;
                 txtBlueScore.text = blueScore.ToString();
             }
+            GetComponent<AudioSource>().Play();
         }
     }
     private void Play(InputAction.CallbackContext context)

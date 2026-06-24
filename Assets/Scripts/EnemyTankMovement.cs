@@ -169,7 +169,7 @@ public class EnemyTankMovement : MonoBehaviour
     }
     private void Shoot()
     {
-        var pewpew = Instantiate(bullet, top.transform.position + top.transform.forward * 1.6f, Quaternion.identity);
+        var pewpew = Instantiate(bullet, top.transform.position + top.transform.forward * 1.6f, Quaternion.Euler(-90, 0 + top.transform.rotation.eulerAngles.y, 0));
         pewpew.GetComponent<Rigidbody>().linearVelocity = top.transform.forward * projectileSpeed;
         pewpew.GetComponent<BulletMove>().damage = projectileDamage;
         pewpew.GetComponent<BulletMove>().lifeTime = 20;
