@@ -157,4 +157,4 @@ MonoBehaviour:
   lifeTime: 0
   bounces: 0
   shooter: 
-  explosionSound: {fileID: 8300000, guid: ff96ad742569f7e4f8e1cd91e7440289, type: 3}
+  explosionObj: {fileID: 2101181184798288685, guid: 1b1e2ef83268cac4c9208bc7dd109cd0, type: 3}

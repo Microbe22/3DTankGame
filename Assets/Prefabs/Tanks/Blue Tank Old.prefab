@@ -67,7 +67,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 98049e640467a5f4fae0d39917fb6bb1, type: 2}
+  - {fileID: 2100000, guid: 6654df2358a3d1a43861f66da3f79e7c, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -179,7 +179,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 98049e640467a5f4fae0d39917fb6bb1, type: 2}
+  - {fileID: 2100000, guid: 6654df2358a3d1a43861f66da3f79e7c, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -295,7 +295,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 98049e640467a5f4fae0d39917fb6bb1, type: 2}
+  - {fileID: 2100000, guid: 6654df2358a3d1a43861f66da3f79e7c, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -349,12 +349,12 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4055303119673010748}
-  - component: {fileID: 8970082036315271298}
-  - component: {fileID: 5343884352958745295}
-  - component: {fileID: -3660398525633020798}
-  - component: {fileID: 4724938769419204489}
+  - component: {fileID: -6669175698399263867}
+  - component: {fileID: 7098835113060267299}
+  - component: {fileID: 5400363701890993872}
+  - component: {fileID: 959403718274101263}
   m_Layer: 0
-  m_Name: Red Tank
+  m_Name: Blue Tank Old
   m_TagString: Tank
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -369,7 +369,7 @@ Transform:
   m_GameObject: {fileID: 4225581671243845336}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.24442, y: 0.5, z: 0.21598}
+  m_LocalPosition: {x: 0, y: 0.5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -377,7 +377,7 @@ Transform:
   - {fileID: 7749396611187749165}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &8970082036315271298
+--- !u!114 &-6669175698399263867
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -388,11 +388,11 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 65777dc0869812c4da69eaa225f419b7, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::TankMovement
-  input: Controller
+  m_EditorClassIdentifier: '::'
+  input: Keyboard
   top: {fileID: 2334486090622217888}
   bottom: {fileID: 637599527929931881}
-  color: Red
+  color: Blue
   speed: 5
   rotateSpeed: 150
   health: 3
@@ -400,7 +400,7 @@ MonoBehaviour:
   maxShootCooldown: 0.5
   projectileSpeed: 18
   powerupTimer: 0
---- !u!54 &5343884352958745295
+--- !u!54 &7098835113060267299
 Rigidbody:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -427,7 +427,7 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 112
   m_CollisionDetection: 0
---- !u!114 &-3660398525633020798
+--- !u!114 &5400363701890993872
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -452,12 +452,12 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_ActionEvents: []
-  m_NeverAutoSwitchControlSchemes: 0
-  m_DefaultControlScheme: Gamepad
-  m_DefaultActionMap: Player Controller
+  m_NeverAutoSwitchControlSchemes: 1
+  m_DefaultControlScheme: Keyboard&Mouse
+  m_DefaultActionMap: Player Keyboard
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
---- !u!82 &4724938769419204489
+--- !u!82 &959403718274101263
 AudioSource:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -621,7 +621,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 98049e640467a5f4fae0d39917fb6bb1, type: 2}
+  - {fileID: 2100000, guid: 6654df2358a3d1a43861f66da3f79e7c, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

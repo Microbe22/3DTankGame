@@ -1654,7 +1654,7 @@ MonoBehaviour:
   - {fileID: 0}
   txtVictor: {fileID: 0}
   Tanks:
-  - {fileID: 4225581671243845336, guid: 6de3ff2bf31cf6c4e9b9af35f24412c3, type: 3}
+  - {fileID: 301602660018450441, guid: 767126d72dbbe674fb82e8bb51079b5c, type: 3}
   - {fileID: 4225581671243845336, guid: 2c2470c6392cd4b40b9578274666cd1a, type: 3}
   blueHearts:
   - {fileID: 509399423}

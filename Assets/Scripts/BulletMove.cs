@@ -17,6 +17,8 @@ public class BulletMove : MonoBehaviour
     private bool zBounce;
 
     public string shooter;
+
+    [SerializeField] private GameObject explosionObj;
     private void Start()
     {
         rb = GetComponent<Rigidbody>();
@@ -68,11 +70,35 @@ public class BulletMove : MonoBehaviour
                 {
                     rb.linearVelocity = new Vector3(speedX * -1, rb.linearVelocity.y, rb.linearVelocity.z);
                     xBounce = true;
+                    if (transform.rotation.y < 0)
+                    {
+                        transform.rotation = Quaternion.Euler(transform.rotation.eulerAngles.x, transform.rotation.eulerAngles.y + 360, transform.rotation.eulerAngles.z);
+                    }
+                    if (transform.rotation.y > 90 && transform.rotation.y < 270)
+                    {
+                        transform.rotation = Quaternion.Euler(transform.rotation.eulerAngles.x, 180 + (180 - transform.rotation.eulerAngles.y), transform.rotation.eulerAngles.z);
+                    }
+                    else
+                    {
+                        transform.rotation = Quaternion.Euler(transform.rotation.eulerAngles.x, 360 - transform.rotation.eulerAngles.y, transform.rotation.eulerAngles.z);
+                    }
                 }
                 if (Mathf.Abs(collision.GetContact(0).normal.z) > 0.1f && zBounce == false)
                 {
                     rb.linearVelocity = new Vector3(speedX, rb.linearVelocity.y, speedZ * -1);
                     zBounce = true;
+                    if (transform.rotation.y < 0)
+                    {
+                        transform.rotation = Quaternion.Euler(transform.rotation.eulerAngles.x, transform.rotation.eulerAngles.y + 360, transform.rotation.eulerAngles.z);
+                    }
+                    if (transform.rotation.y < 180)
+                    {
+                        transform.rotation = Quaternion.Euler(transform.rotation.eulerAngles.x, 180 - transform.rotation.eulerAngles.y,transform.rotation.eulerAngles.z);
+                    }
+                    else
+                    {
+                        transform.rotation = Quaternion.Euler(transform.rotation.eulerAngles.x, (180 - (transform.rotation.eulerAngles.y - 180)) + 180, transform.rotation.eulerAngles.z);
+                    }
                 }
             }
             else
@@ -81,8 +107,12 @@ public class BulletMove : MonoBehaviour
             }
         }
     }
+    private void OnDestroy()
+    {
+        MakeSound();
+    }
     void MakeSound()
     {
-
+        Instantiate(explosionObj, transform.position, Quaternion.identity);
     }
 }
