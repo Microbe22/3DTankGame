@@ -132,8 +132,15 @@ public class TankMovement : MonoBehaviour
         {
             GetComponent<AudioSource>().Play();
 
-            var pewpew = Instantiate(bullet, top.transform.position + new Vector3(0, 0.8f, 0) + (top.transform.forward * -1 * 1.6f), Quaternion.Euler(-90, 0 + top.transform.rotation.eulerAngles.y, 0));
-            pewpew.GetComponent<Rigidbody>().linearVelocity = top.transform.forward * -1 * projectileSpeed;
+            //blue tank was modelled backwards
+            var invert = 1;
+            if (color == "Blue")
+            {
+                invert = -1;
+            }
+
+            var pewpew = Instantiate(bullet, top.transform.position + new Vector3(0, 0.8f, 0) + (top.transform.forward * invert * 1.6f), Quaternion.Euler(-90, 0 + top.transform.rotation.eulerAngles.y, 0));
+            pewpew.GetComponent<Rigidbody>().linearVelocity = top.transform.forward * invert * projectileSpeed;
             pewpew.GetComponent<BulletMove>().damage = projectileDamage;
             pewpew.GetComponent<BulletMove>().lifeTime = 20;
             pewpew.GetComponent<BulletMove>().bounces = projectileBounces;
