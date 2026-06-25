@@ -2,12 +2,14 @@ using UnityEngine;
 
 public class EnemyTankMovement : MonoBehaviour
 {
+    private Rigidbody rb;
+
     [SerializeField] private GameObject top;
     [SerializeField] private GameObject bottom;
 
     private UISwitch UIController;
 
-    [SerializeField] int enemyType; //0 = stationary, 1 = basic, 2 = mines, 3 = projectile speed
+    [SerializeField] int enemyType; //0 = stationary, 1 = waypoints
 
     private Vector2 moveDir;
     public float speed = 5f;
@@ -29,17 +31,30 @@ public class EnemyTankMovement : MonoBehaviour
 
     private GameObject target;
     private bool spotted = false;
+
+    private RaycastHit[] hits;
+
+    [SerializeField] private GameObject[] waypoints;
+    private int currentWaypoint = 0;
     void Start()
     {
+        rb = GetComponent<Rigidbody>();
         UIController = FindFirstObjectByType<UISwitch>();
         UIController.liveEnemies++;
         switch (enemyType)
         {
-            case 0:
-                maxShootCooldown = 1;
+            case 0: //stationary
+                maxShootCooldown = 2;
                 projectileSpeed = 12;
                 projectileDamage = 1;
                 projectileBounces = 0;
+                break;
+            case 1: //waypoints
+                maxShootCooldown = 1.5f;
+                projectileSpeed = 12;
+                projectileDamage = 1;
+                projectileBounces = 0;
+                speed = 5f;
                 break;
         }
     }
@@ -49,18 +64,9 @@ public class EnemyTankMovement : MonoBehaviour
         switch (enemyType)
         {
             case 0:
-                //find nearest player
-                TankMovement[] targets = FindObjectsByType<TankMovement>(FindObjectsSortMode.None);
-                float distance = 100000;
-                foreach (TankMovement tank in targets)
-                {
-                    if ((tank.transform.position - transform.position).magnitude < distance)
-                    {
-                        distance = (tank.transform.position - transform.position).magnitude;
-                        target = tank.gameObject;
-                    }
-                }
-                var hits = Physics.RaycastAll(transform.position + new Vector3(0, 0.5f, 0), top.transform.forward, 100);
+                target = FindNearestPlayer();
+
+                hits = Physics.RaycastAll(transform.position + new Vector3(0, 0.5f, 0), top.transform.forward, 100);
                 spotted = false;
                 foreach (var hit in hits)
                 {
@@ -77,51 +83,48 @@ public class EnemyTankMovement : MonoBehaviour
 
                 if (spotted == false)
                 {
-                    //calculating rotation to target
-                    Vector3 direction = transform.position - target.transform.position;
-                    float angle = Mathf.Atan2(direction.z, direction.x) * Mathf.Rad2Deg;
-                    float targetDeg = Quaternion.AngleAxis(angle, Vector3.down).eulerAngles.y - 90;
+                    rotationDir = RotateTowards(target);
+                }
 
-                    //correction with negative values to create consistency with own rotation
-                    if (targetDeg < 0)
+                break;
+            case 1:
+                target = FindNearestPlayer();
+
+                hits = Physics.RaycastAll(transform.position + new Vector3(0, 0.5f, 0), top.transform.forward, 100);
+                spotted = false;
+                foreach (var hit in hits)
+                {
+                    if (hit.transform.root.gameObject == target)
                     {
-                        targetDeg += 360;
-                    }
-
-                    //calculate own rotation
-                    float currentDeg = top.transform.rotation.eulerAngles.y;
-
-                    //correction for passing the jump from 359 to 0 degrees
-                    if (targetDeg > 270)
-                    {
-                        if (currentDeg < 90)
+                        if (shootCooldown <= 0)
                         {
-                            currentDeg += 360;
+                            Shoot();
                         }
-                    }
-                    else if (targetDeg < 90)
-                    {
-                        if (currentDeg > 270)
-                        {
-                            targetDeg += 360;
-                        }
-                    }
-
-                    //determining the direction that should be rotated in
-                    if (targetDeg > currentDeg)
-                    {
-                        rotationDir = 1;
-                    }
-                    else
-                    {
-                        rotationDir = -1;
+                        spotted = true;
+                        rotationDir = 0;
                     }
                 }
-                
+
+                if (spotted == false)
+                {
+                    rotationDir = RotateTowards(target);
+                }
+
+                rb.linearVelocity = (waypoints[currentWaypoint].transform.position - transform.position).normalized * speed;
+                //if at next waypoint
+                if ((transform.position - waypoints[currentWaypoint].transform.position).magnitude < 0.05f)
+                {
+                    //set next waypoint to the one after
+                    currentWaypoint++;
+                    //at last waypoint, loop back to beginning
+                    if (currentWaypoint > waypoints.Length - 1)
+                    {
+                        currentWaypoint = 0;
+                    }
+                }
                 break;
         }
 
-        transform.Translate(speed * Time.deltaTime * new Vector3(moveDir.x, 0, moveDir.y), Space.Self);
         top.transform.rotation = Quaternion.Euler(0, top.transform.rotation.eulerAngles.y + (rotationDir * rotateSpeed * Time.deltaTime), 0);
 
         var spin = 0;
@@ -169,7 +172,7 @@ public class EnemyTankMovement : MonoBehaviour
     }
     private void Shoot()
     {
-        var pewpew = Instantiate(bullet, top.transform.position + top.transform.forward * 1.6f, Quaternion.Euler(-90, 0 + top.transform.rotation.eulerAngles.y, 0));
+        var pewpew = Instantiate(bullet, top.transform.position + top.transform.forward * 2f, Quaternion.Euler(-90, top.transform.rotation.eulerAngles.y, 0));
         pewpew.GetComponent<Rigidbody>().linearVelocity = top.transform.forward * projectileSpeed;
         pewpew.GetComponent<BulletMove>().damage = projectileDamage;
         pewpew.GetComponent<BulletMove>().lifeTime = 20;
@@ -188,6 +191,63 @@ public class EnemyTankMovement : MonoBehaviour
             {
                 UIController.NextLevel();
             }
+        }
+    }
+    private GameObject FindNearestPlayer()
+    {
+        TankMovement[] targets = FindObjectsByType<TankMovement>(FindObjectsSortMode.None);
+        float distance = 100000;
+        GameObject nearest = null;
+        foreach (TankMovement tank in targets)
+        {
+            if ((tank.transform.position - transform.position).magnitude < distance)
+            {
+                distance = (tank.transform.position - transform.position).magnitude;
+                nearest = tank.gameObject;
+            }
+        }
+        return nearest;
+    }
+    private int RotateTowards(GameObject target)
+    {
+        //calculating rotation to target
+        Vector3 direction = transform.position - target.transform.position;
+        float angle = Mathf.Atan2(direction.z, direction.x) * Mathf.Rad2Deg;
+        float targetDeg = Quaternion.AngleAxis(angle, Vector3.down).eulerAngles.y - 90;
+
+        //correction with negative values to create consistency with own rotation
+        if (targetDeg < 0)
+        {
+            targetDeg += 360;
+        }
+
+        //calculate own rotation
+        float currentDeg = top.transform.rotation.eulerAngles.y;
+
+        //correction for passing the jump from 359 to 0 degrees
+        if (targetDeg > 270)
+        {
+            if (currentDeg < 90)
+            {
+                currentDeg += 360;
+            }
+        }
+        else if (targetDeg < 90)
+        {
+            if (currentDeg > 270)
+            {
+                targetDeg += 360;
+            }
+        }
+
+        //determining the direction that should be rotated in
+        if (targetDeg > currentDeg)
+        {
+            return 1;
+        }
+        else
+        {
+            return -1;
         }
     }
 }

@@ -10,6 +10,8 @@ public class TankMovement : MonoBehaviour
     [SerializeField] private GameObject top;
     [SerializeField] private GameObject bottom;
 
+    int spin = 0;
+
     private UISwitch UIController;
 
     [SerializeField] private string color;
@@ -63,25 +65,34 @@ public class TankMovement : MonoBehaviour
             top.transform.rotation = Quaternion.Euler(0, top.transform.rotation.eulerAngles.y + (rotationDir.x * rotateSpeed * Time.deltaTime), 0);
         }
 
-        var spin = 0;
         if (moveDir.x > 0)
-        {
-            spin = 90;
-        }
-        else if (moveDir.x < 0)
-        {
-            spin = 270;
-        }
-
-        if (moveDir.x != 0)
         {
             if (moveDir.y > 0)
             {
-                spin = (0 + spin) / 2;
+                spin = 45;
             }
             else if (moveDir.y < 0)
             {
-                spin = (180 + spin) / 2;
+                spin = 135;
+            }
+            else
+            {
+                spin = 90;
+            }
+        }
+        else if (moveDir.x < 0)
+        {
+            if (moveDir.y > 0)
+            {
+                spin = 315;
+            }
+            else if (moveDir.y < 0)
+            {
+                spin = 225;
+            }
+            else
+            {
+                spin = 270;
             }
         }
         else
@@ -139,7 +150,7 @@ public class TankMovement : MonoBehaviour
                 invert = -1;
             }
 
-            var pewpew = Instantiate(bullet, top.transform.position + new Vector3(0, 0.8f, 0) + (top.transform.forward * invert * 1.6f), Quaternion.Euler(-90, 0 + top.transform.rotation.eulerAngles.y, 0));
+            var pewpew = Instantiate(bullet, top.transform.position + new Vector3(0, 0.8f, 0) + (top.transform.forward * invert * 1.6f), Quaternion.Euler(-90, top.transform.rotation.eulerAngles.y, 0));
             pewpew.GetComponent<Rigidbody>().linearVelocity = top.transform.forward * invert * projectileSpeed;
             pewpew.GetComponent<BulletMove>().damage = projectileDamage;
             pewpew.GetComponent<BulletMove>().lifeTime = 20;
