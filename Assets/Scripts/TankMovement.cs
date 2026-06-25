@@ -35,7 +35,11 @@ public class TankMovement : MonoBehaviour
     public float powerupTimer = 0;
     void Start()
     {
+        //increase amount of living players
         UIController = FindFirstObjectByType<UISwitch>();
+        UIController.livePlayers++;
+
+        //get inputs
         Inputsystem = new InputSystem_Actions();
         if (input == "Keyboard")
         {
@@ -59,12 +63,15 @@ public class TankMovement : MonoBehaviour
     
     void Update()
     {
+        //move
         transform.Translate(speed * Time.deltaTime * new Vector3(moveDir.x, 0, moveDir.y), Space.Self);
         if (moveDir.magnitude == 0)
         {
+            //rotate top, ONLY when not moving
             top.transform.rotation = Quaternion.Euler(0, top.transform.rotation.eulerAngles.y + (rotationDir.x * rotateSpeed * Time.deltaTime), 0);
         }
 
+        //rotate bottom
         if (moveDir.x > 0)
         {
             if (moveDir.y > 0)
@@ -112,11 +119,13 @@ public class TankMovement : MonoBehaviour
             bottom.transform.rotation = Quaternion.Euler(0, spin, 0);
         }
 
+        //reduce shoot cooldown
         if (shootCooldown > 0)
         {
             shootCooldown -= Time.deltaTime;
         }
 
+        //reduce remaining powerup time
         if (powerupTimer > 0)
         {
             powerupTimer -= Time.deltaTime;
@@ -150,6 +159,7 @@ public class TankMovement : MonoBehaviour
                 invert = -1;
             }
 
+            //create bullet
             var pewpew = Instantiate(bullet, top.transform.position + new Vector3(0, 0.8f, 0) + (top.transform.forward * invert * 1.6f), Quaternion.Euler(-90, top.transform.rotation.eulerAngles.y, 0));
             pewpew.GetComponent<Rigidbody>().linearVelocity = top.transform.forward * invert * projectileSpeed;
             pewpew.GetComponent<BulletMove>().damage = projectileDamage;
@@ -163,6 +173,7 @@ public class TankMovement : MonoBehaviour
     {
         if (UIController.mode == 0)
         {
+            //reduce health & update UI
             health -= damage;
             UIController.SetHearts(color, health);
             if (health <= 0)
@@ -171,6 +182,14 @@ public class TankMovement : MonoBehaviour
                 if (SceneManager.GetActiveScene().name == "PvP")
                 {
                     UIController.Switch(1, color);
+                }
+                else
+                {
+                    UIController.livePlayers--;
+                    if (UIController.livePlayers <= 0)
+                    {
+                        SceneManager.LoadScene("Results");
+                    }
                 }
             }
         }

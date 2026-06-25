@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class EnemyTankMovement : MonoBehaviour
@@ -8,6 +9,9 @@ public class EnemyTankMovement : MonoBehaviour
     [SerializeField] private GameObject bottom;
 
     private UISwitch UIController;
+    private Global global;
+
+    [SerializeField] private string color;
 
     [SerializeField] int enemyType; //0 = stationary, 1 = waypoints
 
@@ -40,7 +44,11 @@ public class EnemyTankMovement : MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
         UIController = FindFirstObjectByType<UISwitch>();
+        global = FindFirstObjectByType<Global>();
+
+        //the amount of living enemies increases
         UIController.liveEnemies++;
+
         switch (enemyType)
         {
             case 0: //stationary
@@ -66,12 +74,14 @@ public class EnemyTankMovement : MonoBehaviour
             case 0:
                 target = FindNearestPlayer();
 
+                //shoot raycast forward
                 hits = Physics.RaycastAll(transform.position + new Vector3(0, 0.5f, 0), top.transform.forward, 100);
                 spotted = false;
                 foreach (var hit in hits)
                 {
                     if (hit.transform.root.gameObject == target)
                     {
+                        //if raycast hits target
                         if (shootCooldown <= 0)
                         {
                             Shoot();
@@ -83,6 +93,7 @@ public class EnemyTankMovement : MonoBehaviour
 
                 if (spotted == false)
                 {
+                    //only rotate if not pointed at target
                     rotationDir = RotateTowards(target);
                 }
 
@@ -90,12 +101,14 @@ public class EnemyTankMovement : MonoBehaviour
             case 1:
                 target = FindNearestPlayer();
 
+                //shoot raycast forward
                 hits = Physics.RaycastAll(transform.position + new Vector3(0, 0.5f, 0), top.transform.forward, 100);
                 spotted = false;
                 foreach (var hit in hits)
                 {
                     if (hit.transform.root.gameObject == target)
                     {
+                        //if raycast hits target
                         if (shootCooldown <= 0)
                         {
                             Shoot();
@@ -107,9 +120,11 @@ public class EnemyTankMovement : MonoBehaviour
 
                 if (spotted == false)
                 {
+                    //only rotate if not pointed at target
                     rotationDir = RotateTowards(target);
                 }
 
+                //move to next waypoint
                 rb.linearVelocity = (waypoints[currentWaypoint].transform.position - transform.position).normalized * speed;
                 //if at next waypoint
                 if ((transform.position - waypoints[currentWaypoint].transform.position).magnitude < 0.05f)
@@ -122,49 +137,15 @@ public class EnemyTankMovement : MonoBehaviour
                         currentWaypoint = 0;
                     }
                 }
+
+                RotateBottom();
                 break;
         }
 
+        //rotate top
         top.transform.rotation = Quaternion.Euler(0, top.transform.rotation.eulerAngles.y + (rotationDir * rotateSpeed * Time.deltaTime), 0);
 
-        var spin = 0;
-        if (moveDir.x > 0)
-        {
-            spin = 90;
-        }
-        else if (moveDir.x < 0)
-        {
-            spin = 270;
-        }
-
-        if (moveDir.x != 0)
-        {
-            if (moveDir.y > 0)
-            {
-                spin = (0 + spin) / 2;
-            }
-            else if (moveDir.y < 0)
-            {
-                spin = (180 + spin) / 2;
-            }
-        }
-        else
-        {
-            if (moveDir.y > 0)
-            {
-                spin = 0;
-            }
-            else if (moveDir.y < 0)
-            {
-                spin = 180;
-            }
-        }
-
-        if (moveDir.magnitude != 0)
-        {
-            bottom.transform.rotation = Quaternion.Euler(0, spin, 0);
-        }
-
+        //reduce shot cooldown
         if (shootCooldown > 0)
         {
             shootCooldown -= Time.deltaTime;
@@ -180,12 +161,14 @@ public class EnemyTankMovement : MonoBehaviour
         pewpew.GetComponent<BulletMove>().shooter = "enemy";
         shootCooldown = maxShootCooldown;
     }
-    public void TakeDamage(int damage)
+    public void TakeDamage(int damage, int color)
     {
+        //reduce health, if dead: reduceamount of living enemies. if amount is 0, go to next level / results scene
         health -= damage;
         if (health <= 0)
         {
             Destroy(gameObject);
+            global.IncreaseScore(color);
             UIController.liveEnemies--;
             if (UIController.liveEnemies <= 0)
             {
@@ -248,6 +231,55 @@ public class EnemyTankMovement : MonoBehaviour
         else
         {
             return -1;
+        }
+    }
+    private void RotateBottom()
+    {
+        var spin = 0;
+        if (rb.linearVelocity.x > 0.1f)
+        {
+            if (rb.linearVelocity.y > 0.1f)
+            {
+                spin = 45;
+            }
+            else if (rb.linearVelocity.y < -0.1f)
+            {
+                spin = 135;
+            }
+            else
+            {
+                spin = 90;
+            }
+        }
+        else if (rb.linearVelocity.x < -0.1f)
+        {
+            if (rb.linearVelocity.y > 0.1f)
+            {
+                spin = 315;
+            }
+            else if (rb.linearVelocity.y < -0.1f)
+            {
+                spin = 225;
+            }
+            else
+            {
+                spin = 270;
+            }
+        }
+        else
+        {
+            if (rb.linearVelocity.y > 0.1f)
+            {
+                spin = 0;
+            }
+            else if (rb.linearVelocity.y < -0.1f)
+            {
+                spin = 180;
+            }
+        }
+        if (rb.linearVelocity.magnitude != 0)
+        {
+            bottom.transform.rotation = Quaternion.Euler(0, spin, 0);
         }
     }
 }

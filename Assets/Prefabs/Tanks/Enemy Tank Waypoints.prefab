@@ -76,6 +76,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyTankMovement
   top: {fileID: 6216666208904107752}
   bottom: {fileID: 8046878285416237601}
+  color: White
   enemyType: 1
   speed: 5
   rotateSpeed: 100

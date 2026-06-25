@@ -14,8 +14,10 @@ public class PowerupType : MonoBehaviour
     }
     private void OnCollisionEnter(Collision other)
     {
+        //if this hits a tank ("triggered" exists to prevent triggering the OnCollisionEnter twice in 1 frame)
         if (other.gameObject.CompareTag("Tank") && triggered == false)
         {
+            //the tank gains a bonus based on the type of powerup
             var tank = other.gameObject.GetComponent<TankMovement>();
             switch (type)
             {
@@ -36,8 +38,9 @@ public class PowerupType : MonoBehaviour
                     tank.projectileSpeed *= 2;
                     break;
             }
+            //powerups last 10 seconds
             tank.powerupTimer = 10;
-            spawner.GetComponent<PowerupSpawning>().spawn = null;
+            //the time for a new powerup to spawn is 20 seconds
             spawner.GetComponent<PowerupSpawning>().timer = 20;
             triggered = true;
             Destroy(gameObject);

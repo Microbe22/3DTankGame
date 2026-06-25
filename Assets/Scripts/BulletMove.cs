@@ -44,11 +44,14 @@ public class BulletMove : MonoBehaviour
     }
     private void OnCollisionEnter(Collision collision)
     {
+        //allways play the explosion sound and destroy this, unless the collision was with a wall, then this bounces
         if (collision.gameObject.CompareTag("Tank") && hit == false)
         {
             MakeSound();
             Destroy(gameObject);
+            //damage the tank
             collision.gameObject.GetComponent<TankMovement>().TakeDamage(damage);
+            //prevent hitting twice in 1 frame
             hit = true;
         }
         else if (collision.gameObject.CompareTag("Bullet"))
@@ -60,7 +63,16 @@ public class BulletMove : MonoBehaviour
         {
             MakeSound();
             Destroy(gameObject);
-            collision.gameObject.GetComponent<EnemyTankMovement>().TakeDamage(damage);
+            //damage the tank, keeping track of who dealt the damage for the scores
+            if (shooter == "Blue")
+            {
+                collision.gameObject.GetComponent<EnemyTankMovement>().TakeDamage(damage, 1);
+            }
+            else if (shooter == "Red")
+            {
+                collision.gameObject.GetComponent<EnemyTankMovement>().TakeDamage(damage, 2);
+            }
+            //prevent hitting twice in 1 frame
             hit = true;
         }
         else
@@ -71,8 +83,10 @@ public class BulletMove : MonoBehaviour
                 //bounce
                 if (Mathf.Abs(collision.GetContact(0).normal.x) > 0.1f && xBounce == false)
                 {
+                    //flip speed
                     rb.linearVelocity = new Vector3(speedX * -1, rb.linearVelocity.y, speedZ);
                     xBounce = true;
+                    //flip rotation
                     if (transform.rotation.y < 0)
                     {
                         transform.rotation = Quaternion.Euler(transform.rotation.eulerAngles.x, transform.rotation.eulerAngles.y + 360, transform.rotation.eulerAngles.z);
@@ -88,8 +102,10 @@ public class BulletMove : MonoBehaviour
                 }
                 if (Mathf.Abs(collision.GetContact(0).normal.z) > 0.1f && zBounce == false)
                 {
+                    //flip speed
                     rb.linearVelocity = new Vector3(speedX, rb.linearVelocity.y, speedZ * -1);
                     zBounce = true;
+                    //flip rotation
                     if (transform.rotation.y < 0)
                     {
                         transform.rotation = Quaternion.Euler(transform.rotation.eulerAngles.x, transform.rotation.eulerAngles.y + 360, transform.rotation.eulerAngles.z);

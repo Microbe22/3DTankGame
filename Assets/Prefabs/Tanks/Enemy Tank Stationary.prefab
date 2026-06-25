@@ -140,6 +140,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyTankMovement
   top: {fileID: 893185700890582018}
   bottom: {fileID: 2177551204058546689}
+  color: White
   enemyType: 0
   speed: 5
   rotateSpeed: 100
@@ -148,6 +149,7 @@ MonoBehaviour:
   maxShootCooldown: 0.5
   projectileSpeed: 18
   powerupTimer: 0
+  waypoints: []
 --- !u!1001 &6549843570625443563
 PrefabInstance:
   m_ObjectHideFlags: 0

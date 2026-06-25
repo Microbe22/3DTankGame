@@ -9,7 +9,7 @@ public class MainMenu : MonoBehaviour
     private int maxChoice = 3;
 
     [SerializeField] private Canvas canvas;
-    [SerializeField] private Image arrow;
+    [SerializeField] private Image[] arrows;
 
     private InputSystem_Actions Inputsystem;
 
@@ -18,6 +18,7 @@ public class MainMenu : MonoBehaviour
     {
         tracker = FindFirstObjectByType<Global>();
 
+        //get inputs
         Inputsystem = new InputSystem_Actions();
         Inputsystem.PlayerController.Enable();
         Inputsystem.PlayerController.Play.performed += Play;
@@ -31,6 +32,7 @@ public class MainMenu : MonoBehaviour
     }
     public void Play(InputAction.CallbackContext context)
     {
+        //configurations for gamemodes
         switch (choice)
         {
             case 1:
@@ -57,6 +59,7 @@ public class MainMenu : MonoBehaviour
     }
     public void Move(InputAction.CallbackContext context)
     {
+        //arrow movement
         if (context.ReadValue<Vector2>().x < 0)
         {
             choice--;
@@ -76,13 +79,19 @@ public class MainMenu : MonoBehaviour
         switch (choice)
         {
             case 1:
-                arrow.transform.position = new Vector2(107, arrow.transform.position.y);
+                arrows[0].enabled = true;
+                arrows[1].enabled = false;
+                arrows[2].enabled = false;
                 break;
             case 2:
-                arrow.transform.position = new Vector2(316, arrow.transform.position.y);
+                arrows[0].enabled = false;
+                arrows[1].enabled = true;
+                arrows[2].enabled = false;
                 break;
             case 3:
-                arrow.transform.position = new Vector2(556, arrow.transform.position.y);
+                arrows[0].enabled = false;
+                arrows[1].enabled = false;
+                arrows[2].enabled = true;
                 break;
         }
     }
