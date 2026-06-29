@@ -42,6 +42,7 @@ public class PowerupType : MonoBehaviour
             tank.powerupTimer = 10;
             //the time for a new powerup to spawn is 20 seconds
             spawner.GetComponent<PowerupSpawning>().timer = 20;
+            spawner.GetComponent<PowerupSpawning>().spawned = false;
             triggered = true;
             Destroy(gameObject);
         }
